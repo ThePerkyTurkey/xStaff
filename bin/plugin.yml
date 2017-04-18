@@ -1,0 +1,10 @@
+name: xStaff
+main: me.ThePerkyTurkey.xStaff
+version: 1.0
+description: An effective staff mode plugin!
+author: ThePerkyTurkey
+
+commands:
+    report:
+        usage: /report <player> <reason>
+        description: Reports a player

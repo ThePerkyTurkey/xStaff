@@ -1,0 +1,99 @@
+#Copyright 2017 William Claridge         
+#
+#Licensed under the Apache License, Version 2.0 (the "License");
+#you may not use this file except in compliance with the License.
+#You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#Unless required by applicable law or agreed to in writing, software
+#distributed under the License is distributed on an "AS IS" BASIS,
+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#See the License for the specific language governing permissions and
+#limitations under the License.                                            
+#
+
+##################Config Section for xStaff##################
+#The prefix to be shown before all messages:
+message-prefix: '&l&4xStaff>>'
+
+#The message to be sent to a player when they are frozen:
+frozen-message:
+    - '&bYou have been frozen'
+    - '&bDoes this work?'
+    
+#Allows players in staff mode to be included in random teleport
+include-staff: true
+
+##################Reports##################
+#Cooldown in seconds to use /report    
+report-cooldown: 60
+
+#Notifys players with permission "xstaff.report.notify" of a report
+report-notify: true
+
+#The title of the main report's GUI
+report-gui-title: '&cReports'
+
+#The title of the report GUI for each players reports
+#Use {0} as the players name. If you are using ' in a possessive form - e.g ThePerkyTurkey's reports,
+#Use a double appostrophe - ThePerkyTurkey''s reports.
+report-gui-player-title: '&c{0}''s reports'
+
+##################Staff Inventory##################
+#Settings for all of the staff items
+#There are seperate permissions to use the items so that each level of staff can access different items
+
+#Shows the staff item even if you don't have permission to use it
+show-no-perms: false
+
+#Right click this item to freeze the player that you are looking at
+Freeze:
+    itemID: 79
+    enabled: true
+    slotNo: 1
+    name: '&6&lToggle Freeze'
+
+#Right click these items to toggle your vanish status    
+Vanish:
+    enabled: true
+    vanish-enabled-itemID: '351:10'
+    vanish-enabled-name: '&6&lVanish: &a&lEnabled'
+    vanish-disabled-itemID: '351:8'
+    vanish-disabled-name: '&6&lVanish: &c&lDisabled'
+    slotNo: 2
+
+#Right click this item to review all of the unresolved reports
+Reports:
+    enabled: true
+    itemID: 339
+    slotNo: 3
+    name: '&6&lReports'
+
+#Right click this item to view the targeted player's inventory and other stats    
+Details:
+    enabled: true
+    itemID: 54
+    slotNo: 5
+    name: '&6&lDetails'
+
+#Right click this item to view all of the players in staff mode
+OnlineStaff:
+    enabled: true
+    itemID: 399
+    slotNo: 7
+    name: '&6&lStaff'
+    
+#Right click this item to be randomly teleported to a player
+RandomTeleport:
+    enabled: true
+    itemID: 381
+    slotNo: 8
+    name: '&6&lRandom Teleport'
+
+#Right click this item to be teleported through the wall that you are looking at
+WallPass:
+    enabled: true
+    itemID: 368
+    slotNo: 9
+    name: '&6&lWall Pass'

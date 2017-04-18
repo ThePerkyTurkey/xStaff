@@ -1,0 +1,19 @@
+name: xStaff
+main: me.ThePerkyTurkey.XStaff
+version: 1.0
+author: ThePerkyTurkey
+
+commands:
+    report:
+        usage: /report <player> <reason>
+        description: Reports a player for a given reason
+    staff:
+        usage: /staff [player]
+        description: Toggles staff mode for you or another player
+    vanish:
+        usage: /vanish [player]
+        description: Toggles vanish mode for you or another player
+        aliases: [v]
+    reports:
+        usage: /reports [player]
+        description: Allows you to view all of the unresolved reports for a player
