@@ -1,15 +1,22 @@
+# DO NOT EDIT THE VERSION
+# Editing will cause errors, and this file may be reset.
+
+#Edit the rest of the messages as you please!
+version: '1.1'
+
 staffEnable: '&r&6Staff Mode &AEnabled'
 staffDisable: '&r&6Staff Mode &cDisabled'
 staffToggleEnable: '&r&6Staff Mode &AEnabled &6for &A{0}'
 staffToggleDisable: '&r&6Staff Mode &cDisabled &6for &A{0}'
 vanishEnable: '&r&6Vanish Mode &AEnabled'
-vanishDisable: '&r&6Vanish Mode &4cDisabled'
+vanishDisable: '&r&6Vanish Mode &4Disabled'
 vanishToggleEnable: '&r&6Vanish Mode &AEnabled &6for &A{0}'
 vanishToggleDisable: '&r&6Vanish Mode &cDisabled &6for &A{0}'
 staffChatEnable: '&r&6Staff Chat &AEnabled'
 staffChatDisable: '&r&6Staff Chat &cDisabled'
 staffChatToggleEnable: '&r&6Staff Chat &AEnabled &6for &A{0}'
 staffChatToggleDisable: '&r&6Staff Chat &cDisabled &6for &A{0}'
+freezeInteract: '&r&cYou cannot do this whilst you are frozen'
 freezeEnable: '&r&6You have frozen &A{0}'
 freezeDisable: '&r&6You have unfrozen &A{0}'
 freezeExempt: '&r&6You may not freeze this player!'
@@ -25,5 +32,8 @@ reportRemoveSuccess: '&r&6The report has been successfully resolved!'
 reportRemoveFailure: '&r&6This report has already been resolved!'
 notifyReport: '&r&A{0} &6has reported &A{1} &6for &A{2}'
 cooldown: '&r&6You must wait before doing this again!'
-noPerms: '&cYou do not have the necessary permissions to do this!'
+noPerms: '&r&cYou do not have the necessary permissions to do this!'
 offline: '&r&6This player cannot be found!'
+teleport: '&r&6You have been teleported to &A{0}'
+notLooking: '&r&cYou must be looking at a player to use this'
+noReports: '&r&cThere are no reports for this player'

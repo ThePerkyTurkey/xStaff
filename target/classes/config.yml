@@ -1,60 +1,90 @@
-#Copyright 2017 William Claridge         
-#
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License.                                            
-#
+# Copyright 2017 William Claridge         
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.                                            
 
-##################Config Section for xStaff##################
-#The prefix to be shown before all messages:
-message-prefix: '&l&4xStaff>>'
+# DO NOT EDIT THE VERSION
+# Editing will cause errors, and this file may be reset.
 
-#The message to be sent to a player when they are frozen:
+# Please note that there is a glitch with the Bukkit api which results in comments being removed.
+# If you experience this glitch and you do not know what each option does, please visit 'ThePerkyTurkey.tk'
+# for the full up-to-date configuration.
+# I am working to fix this bug.
+version: '1.1'
+
+# The prefix to be shown before all messages:
+message-prefix: ''
+
+# The message to be sent to a player when they are frozen:
 frozen-message:
     - '&bYou have been frozen'
     - '&bDoes this work?'
     
-#Allows players in staff mode to be included in random teleport
+# Allows players in staff mode to be included in random teleport
 include-staff: true
 
-##################Reports##################
-#Cooldown in seconds to use /report    
+# Prevent vanished players from taking any damage
+# If set to false, only players with the permission 'xstaff.vanish.god' will be immune to damage
+# If set to true, all vanished players will be in god mode regardless of permissions
+prevent-vanished-damage: true
+
+# Automatically puts vanished players in fly mode
+# If set to false, only players with the permission 'xstaff.vanish.fly' will be able to fly in vanish
+# If set to true, all vanished players will be able to fly regardless of permissions
+vanished-fly: false
+
+# Allow frozen players to chat
+frozen-chat: true
+
+# Allow frozen players to use commands
+frozen-commands: false
+
+# Allow frozen players to be damaged
+frozen-damage: false
+
+# Allow frozen players to damage other entities or players
+frozen-attack: false
+
+# Cooldown in seconds to use /report    
 report-cooldown: 60
 
-#Notifys players with permission "xstaff.report.notify" of a report
+# Notifys players with permission "xstaff.report.notify" of a report
 report-notify: true
 
-#The title of the main report's GUI
+# The title of the main reports GUI
 report-gui-title: '&cReports'
 
-#The title of the report GUI for each players reports
-#Use {0} as the players name. If you are using ' in a possessive form - e.g ThePerkyTurkey's reports,
-#Use a double appostrophe - ThePerkyTurkey''s reports.
-report-gui-player-title: '&c{0}''s reports'
+# Only shows players that are in staff mode in the online staff GUI.
+# If set to false, all online players with the permission 'xstaff.toggle.self' and 
+# those that are in staff mode will be included in the online staff GUI.
+only-in-staff-mode: false
 
-##################Staff Inventory##################
-#Settings for all of the staff items
-#There are seperate permissions to use the items so that each level of staff can access different items
+# The title of the online staff GUI
+online-staff-title: '&cOnline Staff'
 
-#Shows the staff item even if you don't have permission to use it
+# Settings for all of the staff items
+# There are seperate permissions to use the items so that each level of staff can access different items
+
+# Shows the staff item even if you don't have permission to use it
 show-no-perms: false
 
-#Right click this item to freeze the player that you are looking at
+# ight click this item to freeze the player that you are looking at
 Freeze:
     itemID: 79
     enabled: true
     slotNo: 1
     name: '&6&lToggle Freeze'
 
-#Right click these items to toggle your vanish status    
+# Right click these items to toggle your vanish status    
 Vanish:
     enabled: true
     vanish-enabled-itemID: '351:10'
@@ -63,35 +93,35 @@ Vanish:
     vanish-disabled-name: '&6&lVanish: &c&lDisabled'
     slotNo: 2
 
-#Right click this item to review all of the unresolved reports
+# Right click this item to review all of the unresolved reports
 Reports:
     enabled: true
     itemID: 339
     slotNo: 3
     name: '&6&lReports'
 
-#Right click this item to view the targeted player's inventory and other stats    
+# Right click this item to view the targeted player's inventory and other stats    
 Details:
     enabled: true
     itemID: 54
     slotNo: 5
     name: '&6&lDetails'
 
-#Right click this item to view all of the players in staff mode
+# Right click this item to view all of the players in staff mode
 OnlineStaff:
     enabled: true
     itemID: 399
     slotNo: 7
     name: '&6&lStaff'
     
-#Right click this item to be randomly teleported to a player
+# Right click this item to be randomly teleported to a player
 RandomTeleport:
     enabled: true
     itemID: 381
     slotNo: 8
     name: '&6&lRandom Teleport'
 
-#Right click this item to be teleported through the wall that you are looking at
+# Right click this item to be teleported through the wall that you are looking at
 WallPass:
     enabled: true
     itemID: 368

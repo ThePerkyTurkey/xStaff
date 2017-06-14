@@ -1,6 +1,6 @@
 name: xStaff
-main: me.ThePerkyTurkey.XStaff
-version: 1.0
+main: me.ThePerkyTurkey.XStaff.XStaff
+version: '1.1'
 author: ThePerkyTurkey
 
 commands:
@@ -17,3 +17,6 @@ commands:
     reports:
         usage: /reports [player]
         description: Allows you to view all of the unresolved reports for a player
+    freeze:
+        usage: /freeze <player>
+        description: Prevents a player from moving
