@@ -35,7 +35,7 @@ public class CommandVanish implements CommandExecutor{
 			
 			Player p = (Player) sender;
 			
-			if(!p.hasPermission("xstaff.vanish.toggle.self")) {
+			if(!p.hasPermission("xstaff.vanish.toggle")) {
 				p.sendMessage(msg.get("noPerms"));
 				return true;
 			}
@@ -62,8 +62,12 @@ public class CommandVanish implements CommandExecutor{
 			
 			if(sender instanceof Player) {
 				Player player = (Player) sender;
-				if(!player.hasPermission("xstaff.vanish.toggle.others")) {
+				if(!player.hasPermission("xstaff.vanish.toggle.other")) {
 					player.sendMessage(msg.get("noPerms"));
+					return true;
+				}
+				if(PlayerManager.isVanished(target) && PlayerManager.isVanishedFrom(target, player)) {
+					player.sendMessage(msg.get("offline"));
 					return true;
 				}
 				if(PlayerManager.isVanished(target)) {

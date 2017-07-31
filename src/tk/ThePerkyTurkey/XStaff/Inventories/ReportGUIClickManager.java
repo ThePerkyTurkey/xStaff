@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import tk.ThePerkyTurkey.XLibrary.XClickManager;
+import tk.ThePerkyTurkey.XStaff.XClickManager;
 import tk.ThePerkyTurkey.XStaff.XStaff;
 import tk.ThePerkyTurkey.XStaff.Utils.Messages;
 import tk.ThePerkyTurkey.XStaff.Utils.ReportManager;
@@ -58,6 +58,13 @@ public class ReportGUIClickManager implements Listener,XClickManager{
 		if(!e.getInventory().getName().contains("Report")) {
 			return;
 		}
+		
+		e.setCancelled(true);
+		
+		if(e.getCurrentItem() == null || e.getCurrentItem().equals(Material.AIR)) {
+			return;
+		}
+		
 		Player p = (Player) e.getWhoClicked();
 		
 		this.p = p;
@@ -132,6 +139,11 @@ public class ReportGUIClickManager implements Listener,XClickManager{
 			}
 			break;
 		case SKULL_ITEM:
+			if(!p.hasPermission("xstaff.reports.manage")) {
+				p.closeInventory();
+				p.sendMessage(msg.get("noPerms"));
+				return;
+			}
 			String playerName = is.getItemMeta().getDisplayName();
 			this.secondaryPageNo = pageNo;
 			this.secondaryName = name;
@@ -159,6 +171,7 @@ public class ReportGUIClickManager implements Listener,XClickManager{
 			
 			String loc = reportedName + "." + reporterName;
 			
+			//To check if that player is still reported. Another player may have already resolved that report
 			if(rm.hasReported(reporterName, reportedName)) {
 				rm.removeReport(loc);
 				p.sendMessage(msg.get("reportRemoveSuccess"));

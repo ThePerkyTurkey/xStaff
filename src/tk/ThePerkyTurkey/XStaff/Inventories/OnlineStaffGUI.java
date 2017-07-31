@@ -1,8 +1,6 @@
 package tk.ThePerkyTurkey.XStaff.Inventories;
 
-import static org.bukkit.ChatColor.BOLD;
-import static org.bukkit.ChatColor.GOLD;
-import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import tk.ThePerkyTurkey.XLibrary.XPageInventory;
+import tk.ThePerkyTurkey.XStaff.XPageInventory;
 import tk.ThePerkyTurkey.XStaff.XStaff;
 import tk.ThePerkyTurkey.XStaff.Utils.PlayerManager;
 
@@ -36,17 +34,13 @@ public class OnlineStaffGUI implements XPageInventory{
 		
 		instances.put(p, this);
 		
-		setName(xs.getConfigManager().getString("online-staff-title"));
+		setName("§cOnline Staff");
 	}
 
 	@Override
 	public void open(int pageNo) {
 		List<Inventory> pages = generatePages();
-		if(!p.getOpenInventory().getTitle().equals(name)) {
-			p.openInventory(pages.get(pageNo - 1));
-		} else {
-			p.getOpenInventory().getTopInventory().setContents(pages.get(pageNo - 1).getContents());
-		}
+		p.openInventory(pages.get(pageNo - 1));
 	}
 	
 	@Override
@@ -71,9 +65,13 @@ public class OnlineStaffGUI implements XPageInventory{
 			xs.getPlayerManager();
 			players = PlayerManager.inStaffMode;
 		} else {
-			for(Player p : xs.getServer().getOnlinePlayers()) {
-				if(p.hasPermission("xstaff.toggle.self") || PlayerManager.isStaff(p)) {
-					players.add(p);
+			for(Player player : xs.getServer().getOnlinePlayers()) {
+				if(player.hasPermission("xstaff.toggle.self") || PlayerManager.isStaff(player)) {
+					if(PlayerManager.isVanished(player) && PlayerManager.isVanishedFrom(player, p)) {
+						
+					} else {
+						players.add(player);
+					}
 				}
 			}
 		}
@@ -88,9 +86,16 @@ public class OnlineStaffGUI implements XPageInventory{
 				invs.add(formatPageFooter(inv, pageNo));
 				inv = xs.getServer().createInventory(null, 54, name);
 			}
-			
+			ItemStack skull;
 			String name = p.getName();
-			ItemStack skull = makeSkull(name, name, null);
+			if(xs.getServer().getPluginManager().isPluginEnabled("Vault")) {
+				List<String> lore = new ArrayList<String>();
+				lore.add(GOLD + "" + BOLD + "Rank: " + GREEN + "" + BOLD + xs.getPermissionHandler().getPrimaryGroup(p));
+				skull = makeSkull(name, GOLD + "" + BOLD + "Name: " + GREEN + "" + BOLD + name, lore);
+			} else {
+				skull = makeSkull(name, GOLD + "" + BOLD + "Name: " + GREEN + "" + BOLD + name, null);
+			}
+
 			inv.setItem(slotNo, skull);
 			slotNo++;
 		}

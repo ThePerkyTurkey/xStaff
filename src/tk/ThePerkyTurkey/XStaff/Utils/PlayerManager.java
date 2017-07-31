@@ -1,11 +1,17 @@
 package tk.ThePerkyTurkey.XStaff.Utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import tk.ThePerkyTurkey.XStaff.XStaff;
 import tk.ThePerkyTurkey.XStaff.Inventories.StaffInventory;
@@ -21,13 +27,27 @@ public class PlayerManager {
 	private static List<Player> inStaffChat = new ArrayList<>();
 	private static List<Player> frozen = new ArrayList<>();
 	private static List<String> frozenMessage;
+	private static HashMap<Player, Boolean> flightData = new HashMap<Player, Boolean>();
+	private static HashMap<Player, GameMode> gamemodeData = new HashMap<Player, GameMode>();
+	private static Team Staff;
 	
 	public PlayerManager(XStaff xs) {
 		PlayerManager.xs = xs;
 		PlayerManager.msg = xs.getMessages();
 		PlayerManager.cm = xs.getConfigManager();
+		Scoreboard board = xs.getServer().getScoreboardManager().getMainScoreboard();
+		Team Staff = board.getTeam("Staff");
+		
+		if(Staff == null) {
+			Staff = board.registerNewTeam("Staff");
+		}
+		
+		Staff.setCanSeeFriendlyInvisibles(true);
+		
+		PlayerManager.Staff = Staff;
 		xs.getStaffInventory();
 		PlayerManager.frozenMessage = cm.getList("frozen-message", true);
+		sendFrozenMessage();
 	}
 	
 	public static List<String> getFrozenMessage() {
@@ -43,7 +63,7 @@ public class PlayerManager {
 	}
 	
 	public static boolean isVanishedFrom(Player vanished, Player check) {
-		return vanishedFrom.get(vanished).contains(check);
+		return !check.canSee(vanished);
 	}
 	
 	public static boolean isInStaffChat(Player p) {
@@ -70,26 +90,46 @@ public class PlayerManager {
 	
 	public static void setStaff(Player p, boolean set) {
 		if(set) {
+			gamemodeData.put(p, p.getGameMode());
+			p.setGameMode(GameMode.CREATIVE);
 			inStaffMode.add(p);
 			p.sendMessage(msg.get("staffEnable"));
-			StaffInventory.setStaffInventory(p);
+			xs.getStaffInventory().setStaffInventory(p);
+			addToStaff(p);
+			if(!isVanished(p)) {
+				p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
+			}
 		} else {
+			p.setGameMode(gamemodeData.get(p));
+			gamemodeData.remove(p);
 			inStaffMode.remove(p);
 			p.sendMessage(msg.get("staffDisable"));
 			if(p.isOnline()) {
-				StaffInventory.restoreInventory(p);
-			} else {
-				xs.getStaffInventory().writeToFile(p);
+				try {
+					xs.getStaffInventory().restoreInventory(p);
+				} catch (IOException e) {
+					e.printStackTrace();
+					xs.getLogger().severe("An error occured whilst restoring " + p.getName() + "'s inventory");
+				}
+			}
+			removeStaff(p);
+			if(!isVanished(p)) {
+				p.removePotionEffect(PotionEffectType.NIGHT_VISION);
 			}
 		}
 	}
 	
 	public static void setVanished(Player p, boolean set) {
 		if(set) {
+			if(cm.getBoolean("vanished-fly")) {
+				flightData.put(p, p.getAllowFlight());
+				p.setAllowFlight(true);
+			}
 			vanished.add(p);
 			if(PlayerManager.isStaff(p)) {
 				StaffInventory.updateVanishItem(p);
 			}
+			setGhost(p);
 			p.sendMessage(msg.get("vanishEnable"));
 			List<Player> hidden = new ArrayList<Player>();
 			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -97,7 +137,15 @@ public class PlayerManager {
 				hidden.add(player);
 			}
 			vanishedFrom.put(p, hidden);
+			if(!isStaff(p)) {
+				p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
+			}
+			
 		} else {
+			if(cm.getBoolean("vanished-fly")) {
+				p.setAllowFlight(flightData.get(p));
+				flightData.remove(p);
+			}
 			vanished.remove(p);
 			if(PlayerManager.isStaff(p)) {
 				StaffInventory.updateVanishItem(p);
@@ -107,6 +155,10 @@ public class PlayerManager {
 				unvanish(p,player);
 			}
 			vanishedFrom.remove(p);
+			unsetGhost(p);
+			if(!isStaff(p)) {
+				p.removePotionEffect(PotionEffectType.NIGHT_VISION);;
+			}
 		}
 	}
 	
@@ -123,24 +175,35 @@ public class PlayerManager {
 	public static void setFrozen(Player p, boolean set) {
 		if(set) {
 			frozen.add(p);
+			p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 128, false));
+			p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 128, false));
 			for(String s : frozenMessage) {
 				p.sendMessage(s);
 			}
 		} else {
-		 frozen.remove(p);
-		 p.sendMessage(msg.get("unFreeze"));
+			frozen.remove(p);
+		    p.sendMessage(msg.get("unFreeze"));
+		    p.removePotionEffect(PotionEffectType.SLOW);
+		    p.removePotionEffect(PotionEffectType.JUMP);
 		}
 	}
 	
 	public static void vanish(Player hide, Player hideFrom) {
-		if(!hideFrom.hasPermission("xstaff.vanish.see")) {
-			hideFrom.hidePlayer(hide);
+		if(!xs.getServer().getPluginManager().isPluginEnabled("Vault")) {
+			if(!hideFrom.hasPermission("xstaff.vanish.see.all")) {
+				hideFrom.hidePlayer(hide);
+			}
+		} else {
+			String rank = xs.getPermissionHandler().getPrimaryGroup(hide);
+			if(!hideFrom.hasPermission("xstaff.vanish.see." + rank.toLowerCase()) && !hideFrom.hasPermission("xstaff.vanish.see.all")) {
+				hideFrom.hidePlayer(hide);
+			}
 		}
 	}
 	
 	public static void unvanish(Player unhide, Player unhideFrom) {
 		//This is just to stop any errors if the player is already shown to them
-		if(!unhideFrom.hasPermission("xstaff.vanish.see")) {
+		if(!unhideFrom.canSee(unhide)) {
 			unhideFrom.showPlayer(unhide);
 		}
 	}
@@ -175,5 +238,45 @@ public class PlayerManager {
 		} else {
 			setFrozen(p, true);
 		}
+	}
+	
+	private static void addToStaff(Player p) {
+		p.setScoreboard(xs.getServer().getScoreboardManager().getMainScoreboard());
+		if(!Staff.hasPlayer(p)) {
+			Staff.addPlayer(p);
+		}
+	}
+	
+	private static void removeStaff(Player p) {
+		if(Staff.hasPlayer(p)) {
+			Staff.removePlayer(p);
+		}
+	}
+	
+	private static void setGhost(Player p) {
+		addToStaff(p);
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false));
+	}
+	
+	private static void unsetGhost(Player p) {
+		p.removePotionEffect(PotionEffectType.INVISIBILITY);
+		if(!isStaff(p)) {
+			removeStaff(p);
+		}
+	}
+	
+	private static void sendFrozenMessage() {
+		xs.getServer().getScheduler().scheduleSyncRepeatingTask(xs, new Runnable() {
+
+			@Override
+			public void run() {
+				for(Player p : getFrozenPlayers()) {
+					for(String s : getFrozenMessage()) {
+						p.sendMessage(s);
+					}
+				}
+			}
+			
+		}, 100L, 100L);
 	}
 }

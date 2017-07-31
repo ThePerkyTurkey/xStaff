@@ -4,10 +4,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import tk.ThePerkyTurkey.XStaff.XStaff;
+import tk.ThePerkyTurkey.XStaff.Tasks.DetailsInteractTask;
 import tk.ThePerkyTurkey.XStaff.Tasks.FreezeInteractTask;
 import tk.ThePerkyTurkey.XStaff.Tasks.OnlineStaffInteractTask;
 import tk.ThePerkyTurkey.XStaff.Tasks.RandomTeleportTask;
 import tk.ThePerkyTurkey.XStaff.Tasks.ReportsInteractTask;
+import tk.ThePerkyTurkey.XStaff.Tasks.TeleportInteractTask;
 import tk.ThePerkyTurkey.XStaff.Tasks.VanishInteractTask;
 
 public class ItemInteractManager {
@@ -65,6 +67,22 @@ public class ItemInteractManager {
 		if(fullID.equals(formatID(OnlineStaffID))) {
 			if(p.hasPermission("xstaff.mode.onlinestaff")) {
 				new OnlineStaffInteractTask(xs, p);
+			} else {
+				p.sendMessage(msg.get("noPerms"));
+			}
+		}
+		
+		if(fullID.equals(formatID(WallPassID))) {
+			if(p.hasPermission("xstaff.mode.tp")) {
+				new TeleportInteractTask(xs, p);
+			} else {
+				p.sendMessage(msg.get("noPerms"));
+			}
+		}
+		
+		if(fullID.equals(formatID(DetailsID))) {
+			if(p.hasPermission("xstaff.mode.details")) {
+				new DetailsInteractTask(p, xs);
 			} else {
 				p.sendMessage(msg.get("noPerms"));
 			}

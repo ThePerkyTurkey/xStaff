@@ -51,7 +51,7 @@ public class ReportManager {
 		reporter.sendMessage(msgs.get("reportConfirm", reported.getName()));
 		
 		for(Player p : xs.getServer().getOnlinePlayers()) {
-			if(p.hasPermission("xstaff.report.notify") && cm.getBoolean("report-notify")) {
+			if(p.hasPermission("xstaff.notify") && cm.getBoolean("report-notify")) {
 				p.sendMessage(msgs.get("notifyReport", reporter.getName(), reported.getName(), finalMessage));
 			}
 		}

@@ -17,12 +17,12 @@ public class RandomTeleportTask {
 		Messages msg = xs.getMessages();
 		ConfigManager cm = xs.getConfigManager();
 		
-		int randIndex = new Random().nextInt(xs.getServer().getOnlinePlayers().size());
+		int randIndex = new Random().nextInt(xs.getServer().getOnlinePlayers().length);
 		int currentIndex = 0;
 		
 		for(Player target : Bukkit.getServer().getOnlinePlayers()) {
 			
-			if(Bukkit.getServer().getOnlinePlayers().size() == 1) {
+			if(Bukkit.getServer().getOnlinePlayers().length == 1) {
 				p.sendMessage(msg.get("randomTeleportError"));
 				return;
 			}

@@ -34,7 +34,7 @@ public class CommandStaff implements CommandExecutor {
 			
 			Player p = (Player) sender;
 			
-			if(!p.hasPermission("xstaff.toggle.self")) {
+			if(!p.hasPermission("xstaff.mode.toggle")) {
 				p.sendMessage(msg.get("noPerms"));
 				return true;
 			}
@@ -66,7 +66,7 @@ public class CommandStaff implements CommandExecutor {
 					player.sendMessage(msg.get("offline"));
 					return true;
 				}
-				if(!player.hasPermission("xstaff.toggle.others")) {
+				if(!player.hasPermission("xstaff.mode.toggle.other")) {
 					player.sendMessage(msg.get("noPerms"));
 					return true;
 				}

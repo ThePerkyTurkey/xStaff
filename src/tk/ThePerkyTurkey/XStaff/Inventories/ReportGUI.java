@@ -1,12 +1,6 @@
 package tk.ThePerkyTurkey.XStaff.Inventories;
 
-import static org.bukkit.ChatColor.BLUE;
-import static org.bukkit.ChatColor.BOLD;
-import static org.bukkit.ChatColor.GOLD;
-import static org.bukkit.ChatColor.GRAY;
-import static org.bukkit.ChatColor.GREEN;
-import static org.bukkit.ChatColor.RED;
-import static org.bukkit.ChatColor.translateAlternateColorCodes;
+import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import tk.ThePerkyTurkey.XLibrary.XPageInventory;
+import tk.ThePerkyTurkey.XStaff.XPageInventory;
 import tk.ThePerkyTurkey.XStaff.XStaff;
 import tk.ThePerkyTurkey.XStaff.Utils.ReportManager;
 
@@ -37,11 +31,7 @@ public class ReportGUI implements XPageInventory{
 	
 	
 	public ReportGUI(XStaff xs, Player p) {
-		if(xs.getConfigManager().getString("report-gui-title") == null) {
-			this.name = translateAlternateColorCodes('&', "&cReports");
-		} else {
-			this.name = translateAlternateColorCodes('&', xs.getConfigManager().getString("report-gui-title"));
-		}
+		setName("§cReports");
 		this.xs = xs;
 		this.p = p;
 		this.rm = xs.getReportManager();
@@ -55,11 +45,7 @@ public class ReportGUI implements XPageInventory{
 	@Override
 	public void open(int pageNo) {
 		List<Inventory> pages = generatePages();
-		if(!p.getOpenInventory().getTitle().contains("\u00A7cReports")) {
-			p.openInventory(pages.get(pageNo - 1));
-		} else {
-			p.getOpenInventory().getTopInventory().setContents(pages.get(pageNo - 1).getContents());
-		}
+		p.openInventory(pages.get(pageNo - 1));
 	}
 
 	@Override
@@ -82,9 +68,9 @@ public class ReportGUI implements XPageInventory{
 			}
 			String name = entry.getKey();
 			List<String> lore = new ArrayList<>();
-			lore.add(GRAY + "==============");
-			lore.add(BLUE + "Reports: " + GREEN + entry.getValue());
-			lore.add(GRAY + "==============");
+			lore.add(ChatColor.GRAY + "==============");
+			lore.add(ChatColor.BLUE + "Reports: " + ChatColor.GREEN + entry.getValue());
+			lore.add(ChatColor.GRAY + "==============");
 			ItemStack skull = makeSkull(name, name, lore);
 			inv.setItem(itemNo, skull);
 			itemNo++;
@@ -140,17 +126,17 @@ public class ReportGUI implements XPageInventory{
 	public Inventory formatPageFooter(Inventory inv, int pageNo) {
 		ItemStack previousPage = new ItemStack(Material.PAPER, 1);
 		ItemMeta ppim = previousPage.getItemMeta();
-		ppim.setDisplayName(RED + "" + BOLD + "<<Previous Page");
+		ppim.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "<<Previous Page");
 		previousPage.setItemMeta(ppim);
 		
 		ItemStack page = new ItemStack(Material.NETHER_STAR, 1);
 		ItemMeta pim = page.getItemMeta();
-		pim.setDisplayName(RED + "" + BOLD + "Page: " + GOLD + "" + BOLD + pageNo);
+		pim.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Page: " + ChatColor.GOLD + "" + ChatColor.BOLD + pageNo);
 		page.setItemMeta(pim);
 		
 		ItemStack nextPage = new ItemStack(Material.PAPER, 1);
 		ItemMeta npim = nextPage.getItemMeta();
-		npim.setDisplayName(RED + "" + BOLD + "Next Page>>");
+		npim.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Next Page>>");
 		nextPage.setItemMeta(npim);
 		
 		inv.setItem(48, previousPage);
@@ -163,21 +149,21 @@ public class ReportGUI implements XPageInventory{
 	public Inventory formatSecondaryPageFooter(Inventory inv, int pageNo) {
 		ItemStack previousPage = new ItemStack(Material.PAPER, 1);
 		ItemMeta ppim = previousPage.getItemMeta();
-		ppim.setDisplayName(RED + "" + BOLD + "<<Previous Page");
+		ppim.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "<<Previous Page");
 		previousPage.setItemMeta(ppim);
 		
 		ItemStack page = new ItemStack(Material.NETHER_STAR, 1);
 		ItemMeta pim = page.getItemMeta();
-		pim.setDisplayName(RED + "" + BOLD + "Page: " + GOLD + "" + BOLD + pageNo);
+		pim.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Page: " + ChatColor.GOLD + "" + ChatColor.BOLD + pageNo);
 		List<String> lore = new ArrayList<String>();
-		lore.add(GREEN + "" + BOLD + "Click to return");
-		lore.add(GREEN + "" + BOLD + "to the main page!");
+		lore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "Click to return");
+		lore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "to the main page!");
 		pim.setLore(lore);
 		page.setItemMeta(pim);
 		
 		ItemStack nextPage = new ItemStack(Material.PAPER, 1);
 		ItemMeta npim = nextPage.getItemMeta();
-		npim.setDisplayName(RED + "" + BOLD + "Next Page>>");
+		npim.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Next Page>>");
 		nextPage.setItemMeta(npim);
 		
 		inv.setItem(48, previousPage);
@@ -189,11 +175,7 @@ public class ReportGUI implements XPageInventory{
 	
 	public void openPlayerReportGUI(String name, int pageNo) {
 		List<Inventory> pages = getPlayerReportsGUI(name);
-		if(!p.getOpenInventory().getTitle().contains("'s")) {
-			p.openInventory(pages.get(pageNo - 1));
-		} else {
-			p.getOpenInventory().getTopInventory().setContents(pages.get(pageNo - 1).getContents());
-		}
+		p.openInventory(pages.get(pageNo - 1));
 	}
 	
 	public void openNextPlayerReportGUIPage(int currentPageNo, String name) {
@@ -214,7 +196,7 @@ public class ReportGUI implements XPageInventory{
 		
 		int itemNo = 0;
 		int pageNo = 0;
-		Inventory inv = xs.getServer().createInventory(null, 54 , RED + name + "'s Reports");
+		Inventory inv = xs.getServer().createInventory(null, 54 , ChatColor.RED + name + "'s Reports");
 		if(rm.getReports(name) == null) {
 			pages.add(formatSecondaryPageFooter(inv, 1));
 			return pages;
@@ -224,7 +206,7 @@ public class ReportGUI implements XPageInventory{
 				itemNo = 0;
 				pageNo++;
 				pages.add(formatSecondaryPageFooter(inv, pageNo));
-				inv = xs.getServer().createInventory(null, 54, RED + name + "'s Reports");
+				inv = xs.getServer().createInventory(null, 54, ChatColor.RED + name + "'s Reports");
 			}
 			
 			String playerName = e.getKey();
@@ -266,7 +248,7 @@ public class ReportGUI implements XPageInventory{
 	}
 	
 	private Inventory getReportDetailInventory(String reportedName, String reporterName) {
-		Inventory inv = xs.getServer().createInventory(null, 54, RED + "Report Manager");
+		Inventory inv = xs.getServer().createInventory(null, 54, ChatColor.RED + "Report Manager");
 		HashMap<String, String> playerReport = rm.getReports(reportedName);
 		
 		ItemStack report = new ItemStack(Material.PAPER);
@@ -277,34 +259,34 @@ public class ReportGUI implements XPageInventory{
 		
 		ItemStack resolve = new ItemStack(Material.EMERALD_BLOCK);
 		ItemMeta reim = resolve.getItemMeta();
-		reim.setDisplayName(GREEN + "Resolve Report");
+		reim.setDisplayName(ChatColor.GREEN + "Resolve Report");
 		List<String> resolveLore = new ArrayList<String>();
-		resolveLore.add(RED + "Click to remove the report");
+		resolveLore.add(ChatColor.RED + "Click to remove the report");
 		reim.setLore(resolveLore);
 		resolve.setItemMeta(reim);
 		
 		ItemStack back = new ItemStack(Material.REDSTONE_BLOCK);
 		ItemMeta bim = back.getItemMeta();
-		bim.setDisplayName(GREEN + "" + BOLD + "Back");
+		bim.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Back");
 		List<String> backLore = new ArrayList<String>();
-		backLore.add(RED + "Click to return to");
-		backLore.add(RED + "the previous page!");
+		backLore.add(ChatColor.RED + "Click to return to");
+		backLore.add(ChatColor.RED + "the previous page!");
 		bim.setLore(backLore);
 		back.setItemMeta(bim);
 		
 		ItemStack tpToReporter = new ItemStack(Material.COMPASS);
 		ItemMeta reporterim = tpToReporter.getItemMeta();
-		reporterim.setDisplayName(GREEN + "Teleport to " + reporterName);
+		reporterim.setDisplayName(ChatColor.GREEN + "Teleport to " + reporterName);
 		List<String> reporterLore = new ArrayList<String>();
-		reporterLore.add(RED + "Click to teleport to the reporter");
+		reporterLore.add(ChatColor.RED + "Click to teleport to the reporter");
 		reporterim.setLore(reporterLore);
 		tpToReporter.setItemMeta(reporterim);
 		
 		ItemStack tpToReported = new ItemStack(Material.COMPASS);
 		ItemMeta reportedim = tpToReported.getItemMeta();
-		reportedim.setDisplayName(GREEN + "Teleport to " + reportedName);
+		reportedim.setDisplayName(ChatColor.GREEN + "Teleport to " + reportedName);
 		List<String> reportedLore = new ArrayList<String>();
-		reportedLore.add(RED + "Click to teleport to the reported Player");
+		reportedLore.add(ChatColor.RED + "Click to teleport to the reported Player");
 		reportedim.setLore(reportedLore);
 		tpToReported.setItemMeta(reportedim);
 		

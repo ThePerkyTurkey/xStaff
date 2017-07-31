@@ -32,7 +32,7 @@ public class CommandReports implements CommandExecutor {
 		
 		Player p = (Player) sender;
 		
-		if(!p.hasPermission("xstaff.reports")) {
+		if(!p.hasPermission("xstaff.reports.view")) {
 			p.sendMessage(msg.get("noPerms"));
 			return true;
 		}

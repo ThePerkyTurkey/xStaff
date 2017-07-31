@@ -1,12 +1,17 @@
 package tk.ThePerkyTurkey.XStaff.Inventories;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -22,11 +27,10 @@ public class StaffInventory {
 	private XStaff xs;
 	private ConfigManager cm;
 	private FileConfiguration file;
+	private File rootfile;
 	
 	private List<String> allItems = new ArrayList<String>();
 	private static HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();
-	private static HashMap<Player, ItemStack[]> inventories = new HashMap<Player, ItemStack[]>();
-	private static HashMap<Player, ItemStack[]> armour = new HashMap<Player, ItemStack[]>();
 	
 	private static boolean vanishItemEnabled;
 	private static int vanishSlotNo;
@@ -37,6 +41,7 @@ public class StaffInventory {
 		this.xs = xs;
 		this.cm = xs.getConfigManager();
 		this.file = cm.getInventories();
+		this.rootfile = cm.getInventoryFile();
 		allItems.add("Freeze");
 		allItems.add("Reports");
 		allItems.add("Details");
@@ -47,9 +52,8 @@ public class StaffInventory {
 		updateInvTimer();
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void updateInvTimer() {
-		xs.getServer().getScheduler().scheduleSyncRepeatingTask(xs, new BukkitRunnable() {
+		xs.getServer().getScheduler().scheduleSyncRepeatingTask(xs, new Runnable() {
     
 			@Override
 			public void run() {
@@ -58,7 +62,7 @@ public class StaffInventory {
 				}	
 			}
 			
-		}, 20, 20);
+		}, 20L, 20L);
 	}
 	
 	private void initializeItems() {
@@ -76,52 +80,38 @@ public class StaffInventory {
 		vanishDisabled = sim.createVanishItems(false);
 	}
 	
-	public static void saveInventory(Player p) {
-		inventories.put(p, p.getInventory().getContents());
-		armour.put(p, p.getInventory().getArmorContents());
-		
-		p.getInventory().clear();
-	}
-	
-	public static void restoreInventory(Player p) {
-		p.getInventory().clear();
-		
-		p.getInventory().setContents(inventories.get(p));
-		p.getInventory().setArmorContents(armour.get(p));
-		
-		inventories.remove(p);
-		armour.remove(p);
-	}
-	
-	public void writeToFile(Player p) {
+	public void saveInventory(Player p) throws IOException {
+		file.set(p.getUniqueId().toString() + ".inventory", saveItemArray(p.getInventory().getContents()));
+		file.set(p.getUniqueId().toString() + ".armour", saveItemArray(p.getInventory().getArmorContents()));
 		file.set("saved." + p.getName(), true);
-		file.set(p.getUniqueId().toString() + ".inventory", inventories.get(p));
-		file.set(p.getUniqueId().toString() + ".armour", armour.get(p));
+		file.save(rootfile);
+		p.getInventory().clear();
+		p.getInventory().setArmorContents(null);
+	}
+	
+	public void restoreInventory(Player p) throws IOException {
+		p.getInventory().clear();
 		
-		inventories.remove(p);
-		armour.remove(p);
+		p.getInventory().setContents(loadItemArray(makeUsable(file.getMapList(p.getUniqueId().toString() + ".inventory")), new ItemStack[36]));
+		p.getInventory().setArmorContents(loadItemArray(makeUsable(file.getMapList(p.getUniqueId().toString() + ".armour")), new ItemStack[4]));
 		
-		try {
-			file.save(cm.getInventoryFile());
-		} catch (IOException e) {
-			xs.getLogger().severe("An error occured whilst saving inventories.yml");
-			e.printStackTrace();
-		}
+		file.set(p.getUniqueId().toString(), null);
+		file.set("saved." + p.getName(), null);
+		
+		file.save(rootfile);
 	}
 	
 	public boolean needsRestoring(Player p) {
 		return file.getBoolean("saved." + p.getName());
 	}
 	
-	public void getFromFile(Player p) {
-		file.set("saved." + p.getName(), null);
-		inventories.put(p, (ItemStack[]) file.get(p.getUniqueId().toString() + ".inventory"));
-		armour.put(p, (ItemStack[]) file.get(p.getUniqueId().toString() + ".armour"));
-		file.set(p.getUniqueId().toString(), null);
-	}
-	
-	public static void setStaffInventory(Player p) {
-		saveInventory(p);
+	public void setStaffInventory(Player p) {
+		try {
+			saveInventory(p);
+		} catch (IOException e) {
+			e.printStackTrace();
+			xs.getLogger().severe("An error occured whilst saving " + p.getName() + "'s inventory");
+		}
 		PlayerInventory pi = p.getInventory();
 		
 		if(vanishItemEnabled) {
@@ -135,6 +125,19 @@ public class StaffInventory {
 		for(Entry<ItemStack, Integer> entry : items.entrySet()) {
 			pi.setItem(entry.getValue(), entry.getKey());
 		}
+		
+		ItemStack helmet = new ItemStack(Material.CHAINMAIL_HELMET);
+		helmet.addEnchantment(Enchantment.DURABILITY, 1);
+		ItemStack chest = new ItemStack(Material.CHAINMAIL_CHESTPLATE);
+		chest.addEnchantment(Enchantment.DURABILITY, 1);
+		ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS);
+		leggings.addEnchantment(Enchantment.DURABILITY, 1);
+		ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS);
+		boots.addEnchantment(Enchantment.DURABILITY, 1);
+		pi.setHelmet(helmet);
+		pi.setChestplate(chest);
+		pi.setLeggings(leggings);
+		pi.setBoots(boots);
 	}
 	
 	public void updateInventory(Player p) {
@@ -143,6 +146,10 @@ public class StaffInventory {
 		for(int i = 0;i<36;i++) {
 			ItemStack is = getItemFromMap(i);
 			if(pi.getItem(i) != null && !pi.getItem(i).equals(is)) {
+				if(i != vanishSlotNo) {
+					pi.setItem(i, is);
+				}
+			} else if(pi.getItem(i) == null) {
 				if(i != vanishSlotNo) {
 					pi.setItem(i, is);
 				}
@@ -158,6 +165,11 @@ public class StaffInventory {
 		}
 		
 		PlayerInventory pi = p.getInventory();
+		
+		if(pi.getItem(vanishSlotNo) == null) {
+			pi.setItem(vanishSlotNo, (PlayerManager.isVanished(p) ? vanishEnabled : vanishDisabled));
+		}
+	
 		if(PlayerManager.isVanished(p)) {
 			if(!pi.getItem(vanishSlotNo).equals(vanishEnabled)) {
 				pi.setItem(vanishSlotNo, vanishEnabled);
@@ -179,5 +191,45 @@ public class StaffInventory {
 		}
 		return null;
 	}
+	
+	private List<Map<String, Object>> saveItemArray(ItemStack[] inv) {
+	    List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+	    for (int i = 0; i < inv.length; i++)
+	    {
+	      ItemStack item = inv[i];
+	      if (item != null)
+	      {
+	        Map<String, Object> itemserialized = item.serialize();
+	        itemserialized.put("id", Integer.valueOf(i));
+	        result.add(itemserialized);
+	      }
+	    }
+	    return result;
+	 }
+	
+	private ItemStack[] loadItemArray(List<Map<String, Object>> list, ItemStack[] inv) {
+	    for (Map<String, Object> itemmap : list)
+	    {
+	      ItemStack item = ItemStack.deserialize(itemmap);
+	      inv[((Integer)itemmap.get("id")).intValue()] = item;
+	    }
+	    return inv;
+	 }
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<Map<String, Object>> makeUsable(List<Map<?, ?>> iets)
+	  {
+	    List<Map<String, Object>> result = new ArrayList();
+	    for (Map<?, ?> nu : iets)
+	    {
+	      Set<?> keys = nu.keySet();
+	      Map<String, Object> returnmap = new HashMap();
+	      for (Object key : keys) {
+	        returnmap.put((String)key, nu.get(key));
+	      }
+	      result.add(returnmap);
+	    }
+	    return result;
+	 }
 
 }

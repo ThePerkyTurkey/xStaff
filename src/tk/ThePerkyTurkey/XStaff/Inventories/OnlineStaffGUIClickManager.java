@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
-import tk.ThePerkyTurkey.XLibrary.XClickManager;
+import tk.ThePerkyTurkey.XStaff.XClickManager;
 import tk.ThePerkyTurkey.XStaff.XStaff;
 import tk.ThePerkyTurkey.XStaff.Utils.ConfigManager;
 
@@ -23,6 +23,7 @@ public class OnlineStaffGUIClickManager implements Listener,XClickManager {
 	
 	public OnlineStaffGUIClickManager(XStaff xs) {
 		this.xs = xs;
+		this.cm = xs.getConfigManager();
 	}
 	
 	@Override
@@ -33,7 +34,7 @@ public class OnlineStaffGUIClickManager implements Listener,XClickManager {
 		}
 		
 		String name = e.getInventory().getTitle();
-		if(!name.equals(ChatColor.translateAlternateColorCodes('&', cm.getString("online-staff-title")))) {
+		if(!name.equals(ChatColor.translateAlternateColorCodes('&', "&cOnline Staff"))) {
 			return;
 		}
 		
@@ -49,12 +50,17 @@ public class OnlineStaffGUIClickManager implements Listener,XClickManager {
 		if(!e.getInventory().getName().equals(ChatColor.translateAlternateColorCodes('&', cm.getString("online-staff-title")))) {
 			return;
 		}
+		
+		e.setCancelled(true);
+		
+		if(e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR)) {
+			return;
+		}
 		Player p = (Player) e.getWhoClicked();
 		
 		this.p = p;
 		this.e = e;
 		this.osGUI = new OnlineStaffGUI(xs, p);
-		e.setCancelled(true);
 		manage();
 	}
 
