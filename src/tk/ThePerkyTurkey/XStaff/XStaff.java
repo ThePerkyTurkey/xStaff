@@ -152,5 +152,6 @@ public class XStaff extends JavaPlugin {
 	
 	private boolean isLatest() {
 		String currentVersion = XStaff.getDescription().getVersion();
+		return true;
 	}
 }

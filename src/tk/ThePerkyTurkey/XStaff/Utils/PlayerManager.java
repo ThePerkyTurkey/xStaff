@@ -35,7 +35,7 @@ public class PlayerManager {
 		PlayerManager.xs = xs;
 		PlayerManager.msg = xs.getMessages();
 		PlayerManager.cm = xs.getConfigManager();
-		Scoreboard board = xs.getServer().getScoreboardManager().getMainScoreboard();
+		Scoreboard board = xs.getServer().getScoreboardManager().getNewScoreboard();
 		Team Staff = board.getTeam("Staff");
 		
 		if(Staff == null) {
